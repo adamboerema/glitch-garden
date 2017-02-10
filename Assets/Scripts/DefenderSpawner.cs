@@ -5,27 +5,35 @@ public class DefenderSpawner : MonoBehaviour {
 
     public Camera cameraInstance;
     private GameObject parent;
+    private StarDisplay starDisplay;
 
 	// Use this for initialization
 	void Start () {
         parent = GameObject.Find("Defenders");
-
+        starDisplay = GameObject.FindObjectOfType<StarDisplay>();
         if (!parent)
         {
             parent = new GameObject("Defenders");
         }
 	}
-	
-	// Update is called once per frame
-	void Update () {
-	
-	}
 
     void OnMouseDown()
     {
         GameObject defender = Button.selectedDefender;
-        GameObject newDefender = Instantiate(defender, SnapToGrid(CalculateWorldPointOfMouseClick()), Quaternion.identity) as GameObject;
-        newDefender.transform.parent = parent.transform;
+        Vector2 rawPos = CalculateWorldPointOfMouseClick();
+        Vector2 roundedPos = SnapToGrid(rawPos);
+
+        Debug.Log(defender.GetComponent<Defender>().starCost);
+        int defenderCost = defender.GetComponent<Defender>().starCost;
+
+        Debug.Log(starDisplay);
+        if(starDisplay.UseStars(defenderCost) == StarDisplay.Status.SUCCESS)
+        {
+            SpawnDefender(roundedPos, defender);
+        } else
+        {
+            Debug.Log("Can not afford defender");
+        }
     }
 
     Vector2 SnapToGrid(Vector2 rawWorldPos)
@@ -43,5 +51,11 @@ public class DefenderSpawner : MonoBehaviour {
 
         Vector3 conversionTrip = new Vector3(mouseX, mouseY, distanceFromCamera);
         return cameraInstance.ScreenToWorldPoint(conversionTrip);
+    }
+
+    void SpawnDefender(Vector2 roundedPos, GameObject defender)
+    {
+        GameObject newDefender = Instantiate(defender, roundedPos, Quaternion.identity) as GameObject;
+        newDefender.transform.parent = parent.transform;
     }
 }
