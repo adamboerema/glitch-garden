@@ -5,7 +5,7 @@ using System.Collections;
 [RequireComponent (typeof(Text))]
 public class StarDisplay : MonoBehaviour {
 
-    public static int starCount = 100;
+    public int starCount = 100;
     private Text starDisplay;
 
     public enum Status { SUCCESS, FAILURE };
